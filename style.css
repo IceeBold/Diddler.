@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+
+* {
+   box-sizing: border-box;
+   margin: 0;
+   padding: 0;
+   font-family: 'Montserrat', sans-serif;
+}
+
+body {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   height: 100vh;
+   background-color: #f1f2f6;
+}
+
+#app {
+   display: flex;
+   flex-direction: column;
+   width: 100%;
+   max-width: 600px;
+   background-color: #ffffff;
+   border-radius: 15px;
+   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+   overflow: hidden;
+}
+
+#username-container {
+   display: flex;
+   justify-content: center;
+   padding: 20px;
+   background-color: #4a90e2;
+   border-top-left-radius: 15px;
+   border-top-right-radius: 15px;
+}
+
+#username {
+   padding: 10px;
+   font-size: 16px;
+   border: none;
+   border-radius: 8px;
+   outline: none;
+   width: 60%;
+   max-width: 250px;
+   margin-right: 10px;
+}
+
+#set-username {
+   padding: 10px 20px;
+   font-size: 16px;
+   color: #fff;
+   background-color: #3d7ccd;
+   border: none;
+   border-radius: 8px;
+   cursor: pointer;
+}
+
+#set-username:hover {
+   background-color: #356bb3;
+}
+
+#chat-container {
+   display: flex;
+   height: 500px;
+   border-top: 1px solid #ddd;
+}
+
+#users {
+   width: 30%;
+   background-color: #f7f9fc;
+   padding: 10px;
+   border-right: 1px solid #ddd;
+   border-bottom-left-radius: 15px;
+}
+
+#users h3 {
+   font-size: 18px;
+   text-align: center;
+   color: #4a90e2;
+}
+
+#message-area {
+   width: 70%;
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+}
+
+#message-container {
+   padding: 20px;
+   overflow-y: auto;
+   flex-grow: 1;
+   background-color: #f9f9f9;
+}
+
+.message {
+   padding: 12px 15px;
+   margin: 10px 0;
+   border-radius: 15px;
+   background-color: #e0f7fa;
+   max-width: 80%;
+   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.sender {
+   font-weight: bold;
+   color: #333;
+   margin-bottom: 5px;
+}
+
+#form {
+   display: flex;
+   padding: 15px;
+   border-top: 1px solid #ddd;
+   background-color: #f5f7f9;
+   border-bottom-right-radius: 15px;
+}
+
+#input {
+   flex: 1;
+   padding: 10px;
+   font-size: 16px;
+   border: 1px solid #ddd;
+   border-radius: 10px;
+   margin-right: 10px;
+}
+
+#send {
+   padding: 10px 20px;
+   font-size: 16px;
+   color: #fff;
+   background-color: #4a90e2;
+   border: none;
+   border-radius: 10px;
+   cursor: pointer;
+}
+
+#send:hover {
+   background-color: #3d7ccd;
+}

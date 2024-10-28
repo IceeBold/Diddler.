@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diddler</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #f9f9f9; 
+            display: flex; 
+            height: 100vh; /* Full height */
+            overflow: hidden; /* Prevent scrolling */
+        }
+        h2 { 
+            margin: 0; 
+            padding: 15px; 
+            background-color: #333; 
+            color: #fff; 
+            text-align: center; 
+        }
+        #app { 
+            width: 100%; 
+            height: 100%; /* Full height */
+            display: flex; 
+            flex-direction: column; 
+        }
+        #username-container { 
+            padding: 20px; 
+            text-align: center; 
+        }
+        #username { 
+            padding: 10px; 
+            font-size: 16px; 
+            width: 100%; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+        }
+        #set-username { 
+            margin-top: 10px; 
+            padding: 10px 20px; 
+            font-size: 16px; 
+            border: none; 
+            color: #fff; 
+            background-color: #333; 
+            cursor: pointer; 
+            border-radius: 5px; 
+        }
+        #chat-container { 
+            display: flex; 
+            flex: 1; /* Fill remaining space */
+            overflow: hidden; /* Hide overflow */
+        }
+        #users { 
+            list-style-type: none; 
+            padding: 0; 
+            margin: 0; 
+            width: 30%; 
+            background: #f1f1f1; 
+            border-right: 1px solid #ddd; 
+            height: 100%; /* Full height */
+            overflow-y: auto; /* Scrollable */
+        }
+        #users h3 { 
+            padding: 10px; 
+            background: #333; 
+            color: #fff; 
+            margin: 0; 
+            text-align: center; 
+        }
+        #users li { 
+            padding: 10px; 
+            border-bottom: 1px solid #ddd; 
+            cursor: pointer; 
+        }
+        #message-container { 
+            flex: 1; 
+            padding: 10px; 
+            overflow-y: auto; 
+            height: 100%; /* Full height */
+            background-color: #fff; 
+        }
+        .message { 
+            margin: 5px 0; 
+            padding: 10px; 
+            background: #e0e0e0; 
+            border-radius: 5px; 
+        }
+        .sender { 
+            font-weight: bold; 
+            color: #333; 
+        }
+        #form { 
+            display: flex; 
+            padding: 10px; 
+            border-top: 1px solid #ddd; 
+            background-color: #fff; 
+        }
+        #input { 
+            flex: 1; 
+            padding: 10px; 
+            font-size: 16px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+        }
+        #send { 
+            padding: 10px; 
+            font-size: 16px; 
+            border: none; 
+            color: #fff; 
+            background-color: #333; 
+            cursor: pointer; 
+            border-radius: 5px; 
+        }
+        /* Profile and settings button */
+        #profile-settings { 
+            position: absolute; 
+            top: 20px; 
+            right: 20px; 
+            background: #333; 
+            color: #fff; 
+            padding: 10px 15px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h2>Diddler</h2>
+        <button id="profile-settings">Profile & Settings</button>
+        <div id="username-container">
+            <input id="username" placeholder="Enter your name" />
+            <button id="set-username">Join Chat</button>
+        </div>
+        <div id="chat-container" style="display: none;">
+            <ul id="users"><h3>Online Users</h3></ul>
+            <div id="message-container"></div>
+        </div>
+        <form id="form" action="" style="display: none;">
+            <input id="input" autocomplete="off" placeholder="Type a message... (Messages Delete After Some Time!)" />
+            <button id="send">Send</button>
+        </form>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const usernameContainer = document.getElementById("username-container");
+        const usernameInput = document.getElementById("username");
+        const setUsernameBtn = document.getElementById("set-username");
+        const chatContainer = document.getElementById("chat-container");
+        const usersList = document.getElementById("users");
+        const messageContainer = document.getElementById("message-container");
+        const form = document.getElementById("form");
+        const input = document.getElementById("input");
+
+        // Load username from local storage if available
+        if (localStorage.getItem("username")) {
+            const savedUsername = localStorage.getItem("username");
+            joinChat(savedUsername);
+        }
+
+        // Set Username
+        setUsernameBtn.addEventListener("click", () => {
+            const username = usernameInput.value.trim();
+            if (username) {
+                localStorage.setItem("username", username);
+                joinChat(username);
+            }
+        });
+
+        function joinChat(username) {
+            socket.emit("set username", username);
+            usernameContainer.style.display = "none";
+            chatContainer.style.display = "flex";
+            form.style.display = "flex";
+        }
+
+        // Send message
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            if (input.value) {
+                socket.emit("chat message", input.value);
+                input.value = "";
+            }
+        });
+
+// Display incoming messages with timestamp
+socket.on("chat message", function ({ sender, msg }) {
+    const timestamp = new Date().toLocaleTimeString(); // Get current time
+    const item = document.createElement("div");
+    item.classList.add("message");
+    item.innerHTML = `<div class="sender">${sender} <span style="font-size: 12px; color: gray;">(${timestamp})</span></div><div>${msg}</div>`;
+    messageContainer.appendChild(item);
+    messageContainer.scrollTop = messageContainer.scrollHeight;
+});
+
+
+        // Update online users list
+        socket.on("update users", function (users) {
+            usersList.innerHTML = "<h3>Online Users</h3>";
+            users.forEach(user => {
+                const userItem = document.createElement("li");
+                userItem.textContent = user;
+                usersList.appendChild(userItem);
+            });
+        });
+        
+
+        
+    </script>
+</body>
+</html>
